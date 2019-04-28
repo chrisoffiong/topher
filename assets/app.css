@@ -1,0 +1,21 @@
+#jumbo {
+    font-family: 'Luckiest Guy', cursive;
+}
+
+.jumbotron {
+    background-image: url('bomb.jpg');
+    height: 300px;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: black !important;
+}
+
+.btn-danger {
+    padding: 30px;
+}
+
+.canvas {
+    margin: 200px;
+    padding: 200px;
+}
