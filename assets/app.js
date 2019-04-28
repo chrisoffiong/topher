@@ -276,9 +276,7 @@ function create() {
     rocks = map.createStaticLayer('Top' , [tilemap], 0, 0)
     
     rocks.immovable = true;
-    this.physics.add.collider(this.player, map.getLayer('Top'), function() {
-        console.log('hit')
-    })
+    this.physics.add.collider(this.player, rocks)
     rocks.setCollision([48, 56])
     
     
