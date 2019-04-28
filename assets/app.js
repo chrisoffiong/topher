@@ -1,11 +1,11 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1400,
+    height: 1200,
     physics: {
         default: 'arcade',
         arcade: {
-           
+            gravity: { y: 0 }
         }
     },
     scene: {
@@ -27,13 +27,15 @@ var bomb
 var spaceBar
 var tween
 var text
+var rocks
 var isSpacePressed = false
 var timedEvent
-
+var newPhysics
 
 function preload() {
     this.load.atlas('player', './assets/sprites.png', './assets/sprites.json')
     this.load.image('level_1', './assets/maps/tilesheet_cave.png')
+    this.load.tilemapTiledJSON('map2','/assets/maps/real.json')
     this.load.tilemapTiledJSON('map', './assets/maps/level_1.json')
     this.load.atlas('bomb', './assets/bomb.png', './assets/bomb.json')
     this.load.atlas('player2', './assets/player2.png', './assets/player2.json')
@@ -43,15 +45,11 @@ function preload() {
 }
 
 function create() {
-    // text = this.add.text(30, 20, '0', { font: '16px Courier', fill: '#00ff00' });
-    // text.onWorldBounds = false;
-    // tween = this.tweens.addCounter({
-    //     from: 0,
-    //     to: 100,
-    //     duration: 5000
-    // });
-    this.cameras.main.centerOn(200, 120)
-    this.add.image(200, 120, 'bg').setDepth(-2)
+   window.player = this.player
+    this.cameras.main.centerOn(400, 300)
+    this.player = this.physics.add.sprite(400,600,  'player')
+    this.player.setCollideWorldBounds(true);
+    this.player.onWorldBounds = true;
     var self = this;
     this.socket = io();
     this.socket.on('currentPlayers', function (players) {
@@ -61,31 +59,20 @@ function create() {
             }
         });
     });
+    console.log(self)
+     
     cursors = this.input.keyboard.createCursorKeys();
     spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-
-    map = this.add.tilemap('map')
-    let tilemap = map.addTilesetImage("Cave", 'level_1')
-    this.ground = map.createStaticLayer('Ground', [tilemap],0,0).setDepth(-1)
-    rocks = map.createStaticLayer('Rocks', [tilemap], 0, 0)
-
-    rocks.setCollision([1214])
-   console.log(self.ground)
- 
-    rocks.immovable = true;
+    
+    
     // rocks.collideWorldBounds = true
     console.log(rocks)
     function addPlayer(self, playerInfo) {
-        player = self.physics.add.sprite(playerInfo.X, playerInfo.Y, 'player')
-        player.setCollideWorldBounds(true);
-        player.onWorldBounds = true;
-        self.physics.add.collider(player, rocks)
-        
-    }
+      
      
-    rocks.setTileLocationCallback(1214, function() {
-        console.log('hit')
-    })
+    }
+    
+   
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', function (players) {
         Object.keys(players).forEach(function (id) {
@@ -108,7 +95,7 @@ function create() {
     });
 
     function addOtherPlayers(self, playerInfo) {
-        otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'player2')
+        otherPlayer = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player2')
         otherPlayer.playerId = playerInfo.playerId;
         self.otherPlayers.add(otherPlayer);
         
@@ -282,8 +269,19 @@ function create() {
     })
    
     
-   
-    // this.physics.world.addCollider(rocks, this.ground)
+    map = this.add.tilemap('map2')
+    let tilemap = map.addTilesetImage("tilesheet_cave", 'level_1')
+
+    this.ground = map.createStaticLayer('Ground', [tilemap],0,0).setDepth(-1)
+    rocks = map.createStaticLayer('Top' , [tilemap], 0, 0)
+    
+    rocks.immovable = true;
+    this.physics.add.collider(this.player, map.getLayer('Top'), function() {
+        console.log('hit')
+    })
+    rocks.setCollision([48, 56])
+    
+    
   
     this.socket.on('playerMoved', function (playerInfo) {
         self.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -307,7 +305,9 @@ this.socket.on('Bomb', function (playerInfo) {
     //   bomb.setPosition(playerInfo.x, playerInfo.y);
     }
   });
+  
 });
+
 }
  document.addEventListener("keydown", space);
 function space(event) {
@@ -329,26 +329,25 @@ function space(event) {
 
 
 function update() {
-    
-    // text.setText([
+  
     //     'Value: ' + tween.getValue(),
     //     'Progress: ' + tween.totalProgress,
     //     'Elapsed: ' + tween.totalElapsed,
     //     'Duration: ' + tween.totalDuration
     // ]);
-    if (player) {
-        var x = player.x;
-        var y = player.y;
+    if (this.player) {
+        var x = this.player.x;
+        var y = this.player.y;
 
-        if (player.oldPosition && (x !== player.oldPosition.x || y !== player.oldPosition.y)) {
+        if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y)) {
             this.socket.emit('playerMovement', {
-                x: player.x,
-                y: player.y
+                x: this.player.x,
+                y: this.player.y
             });
         }
-        player.oldPosition = {
-            x: player.x,
-            y: player.y,
+        this.player.oldPosition = {
+            x: this.player.x,
+            y: this.player.y,
         };
         if (space) {
             isSpacePressed = true
@@ -369,8 +368,8 @@ function update() {
             // bomb.on('animationcomplete', animComplete, this)
             timedEvent = this.time.delayedCall(500, onEvent, [], this)
             this.socket.emit('Bombset', {
-                x: player.x,
-                y: player.y
+                x: this.player.x,
+                y: this.player.y
             })
         }
 
@@ -387,24 +386,24 @@ function update() {
             }
         
         if (cursors.left.isDown) {
-            player.x--;
+            this.player.x--;
 
-            player.anims.play('left', true);
+            this.player.anims.play('left', true);
         } else if (cursors.right.isDown) {
-            player.x++;
+            this.player.x++;
 
-            player.anims.play('right', true);
+            this.player.anims.play('right', true);
         } else if (cursors.up.isDown) {
-            player.y--
+            this.player.y--
 
-            player.anims.play('up', true);
+            this.player.anims.play('up', true);
         } else if (cursors.down.isDown) {
-            player.y++
+            this.player.y++
 
-            player.anims.play('down')
+            this.player.anims.play('down')
         } else if (cursors.down.isUp) {
 
-            player.anims.play('idle')
+            this.player.anims.play('idle')
         }
         else if (self.otherPlayer) {
             if (cursors.left.isDown) {
