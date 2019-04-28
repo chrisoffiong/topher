@@ -16,6 +16,7 @@ var config = {
 }
 
 var game = new Phaser.Game(config);
+var map
 var space
 var self
 var player
@@ -63,18 +64,14 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
     spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
-    this.map = this.add.tilemap('map')
-    let tilemap = this.map.addTilesetImage("Cave", 'level_1')
-    this.ground = this.map.createStaticLayer('Ground', tilemap).setDepth(-1)
-    let rocks = this.map.createStaticLayer('Rocks', tilemap, 0, 0)
-    rocks.setCollision(1214)
-    // this.rocks.body.setEnable();
-    // this.physics.world.enable(rocks);
+    map = this.add.tilemap('map')
+    let tilemap = map.addTilesetImage("Cave", 'level_1')
+    this.ground = map.createStaticLayer('Ground', [tilemap],0,0).setDepth(-1)
+    rocks = map.createStaticLayer('Rocks', [tilemap], 0, 0)
 
-    // this.ground.body.setEnable()
-    // this.player.body.setEnable()
-    // this.player2.body.setEnable()
-    rocks.setCollisionByProperty({collides: true})
+    rocks.setCollision([1214])
+   console.log(self.ground)
+ 
     rocks.immovable = true;
     // rocks.collideWorldBounds = true
     console.log(rocks)
@@ -332,6 +329,7 @@ function space(event) {
 
 
 function update() {
+    
     // text.setText([
     //     'Value: ' + tween.getValue(),
     //     'Progress: ' + tween.totalProgress,
