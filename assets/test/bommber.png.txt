@@ -1,0 +1,1 @@
+bommber_01.png.png 0 0, bommber_02.png.png 0 0, bommber_03.png.png 0 0.
