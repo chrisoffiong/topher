@@ -276,7 +276,7 @@ function create() {
     rocks = map.createStaticLayer('Top' , [tilemap], 0, 0)
     
     rocks.immovable = true;
-    this.physics.add.collider(this.player, rocks)
+    this.physics.add.collider(this.player, otherPlayers)
     rocks.setCollision([48, 56])
     
     
