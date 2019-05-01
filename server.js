@@ -50,6 +50,6 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('Bomb', players[socket.id]);
   });
 });
-server.listen(3000, function () {
-  console.log('Listening on 3000 port')
+server.listen(8080, function () {
+  console.log('Listening on 8080 port')
 })
