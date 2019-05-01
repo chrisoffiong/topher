@@ -1,0 +1,1 @@
+bomb_01.png.png 0 0, bomb_02.png.png 0 0, bomb_03.png.png 0 0, bomb_04.png.png 0 0, bomb_05.png.png 0 0, bomb_06.png.png 0 0.

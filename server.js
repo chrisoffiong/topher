@@ -6,14 +6,14 @@ var path = require('path');
 
 app.use('/assets', express.static(__dirname + '/assets'));
 
-app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html')
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + '/index.html')
 })
 var io = require('socket.io').listen(server);
- 
+
 var players = {};
 
- 
+
 io.on('connection', function (socket) {
   console.log('a user connected');
   // create a new player and add it to our players object
@@ -28,7 +28,7 @@ io.on('connection', function (socket) {
   socket.emit('currentPlayers', players);
   // update all other players of the new player
   socket.broadcast.emit('newPlayer', players[socket.id]);
- 
+
   // when a player disconnects, remove them from our players object
   socket.on('disconnect', function () {
     console.log('user disconnected');
@@ -46,10 +46,10 @@ io.on('connection', function (socket) {
   socket.on('Bombset', function (bombData) {
     players[socket.id].x = bombData.x;
     players[socket.id].y = bombData.y;
-    // emit a message to all players about the player that moved
+    // emit a message to all players about the player that set a bomb
     socket.broadcast.emit('Bomb', players[socket.id]);
   });
 });
 server.listen(3000, function () {
-    console.log('Listening on 3000 port')
+  console.log('Listening on 3000 port')
 })

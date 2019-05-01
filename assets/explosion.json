@@ -1,0 +1,40 @@
+{
+"frames": {
+	"explosion_09.png": {
+		"frame": {"x":141, "y":131, "w":60, "h":61},
+		"spriteSourceSize": {"x":0,"y":0,"w":60,"h":61},
+		"sourceSize": {"w":60,"h":61}
+	},
+	"explosion_10.png": {
+		"frame": {"x":78, "y":0, "w":66, "h":66},
+		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":66},
+		"sourceSize": {"w":66,"h":66}
+	},
+	"explosion_11.png": {
+		"frame": {"x":141, "y":67, "w":64, "h":63},
+		"spriteSourceSize": {"x":0,"y":0,"w":64,"h":63},
+		"sourceSize": {"w":64,"h":63}
+	},
+	"explosion_12.png": {
+		"frame": {"x":73, "y":78, "w":67, "h":69},
+		"spriteSourceSize": {"x":0,"y":0,"w":67,"h":69},
+		"sourceSize": {"w":67,"h":69}
+	},
+	"explosion_13.png": {
+		"frame": {"x":0, "y":78, "w":72, "h":73},
+		"spriteSourceSize": {"x":0,"y":0,"w":72,"h":73},
+		"sourceSize": {"w":72,"h":73}
+	},
+	"explosion_14.png": {
+		"frame": {"x":0, "y":0, "w":77, "h":77},
+		"spriteSourceSize": {"x":0,"y":0,"w":77,"h":77},
+		"sourceSize": {"w":77,"h":77}
+	}
+
+},
+"meta": {
+	"image": "sprites.png",
+	"size": {"w": 206, "h": 193},
+	"scale": "1"
+}
+}
