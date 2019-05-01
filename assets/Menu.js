@@ -78,7 +78,7 @@ class Menu extends Phaser.Scene {
             
         })
    
-        this.sound.pauseOnBlur = false
+        this.sound.pauseOnBlur = true
     
     }
 
