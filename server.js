@@ -50,6 +50,7 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('Bomb', players[socket.id]);
   });
 });
-server.listen(8080, function () {
+var port = process.env.PORT || 8080
+server.listen(port, function () {
   console.log('Listening on 8080 port')
 })
