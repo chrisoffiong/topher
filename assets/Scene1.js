@@ -573,9 +573,7 @@ class Scene1 extends Phaser.Scene {
                     })
                   
                 
-                    this.physics.add.collider(this.bomb, this.player, () => {
-                        console.log('collide')
-                    })
+              
 
                     bomb.destroy()
                     this.time.delayedCall(1000, () => {
