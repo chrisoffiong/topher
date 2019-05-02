@@ -9,13 +9,18 @@ class Menu extends Phaser.Scene {
         this.load.audio('music', './assets/bomberman_music.mp3')
         this.load.image('enter', './assets/enter.png')
         this.load.atlas('explosion', './assets/explosionn.png', './assets/explosion.json')
+        this.load.image('bombs', './assets/bombs.png')
+        this.load.image('join', './assets/joingame.png')
+        this.load.image('away', './assets/away.png')
     }
     init(data) {
 
     }
 
     create()  {
-       let playButton = this.add.image(400, 300, "enter").setDepth(2)
+       this.add.image(400, 90, 'bombs').setDepth(2)
+       this.add.image(400, 140, 'away').setDepth(2)
+       let playButton = this.add.image(400, 500, "join").setDepth(2)
        let hoverSprite= this.add.sprite(100, 100, 'bomb', 'bomb2.png').setDepth(2)
        let bombSprite = this.add.sprite(100, 100, 'explosion', 'explosion_09.png').setDepth(2)
        bombSprite.setScale(2)
@@ -47,10 +52,7 @@ class Menu extends Phaser.Scene {
         })
 
         this.add.image(400, 300,'titlescreen')
-        this.add.text(150,400, "Loading game...", {
-            fontSize: 64,
-            color: '#000000'
-        })
+      
         playButton.setInteractive()
 
         playButton.on("pointerover", () => {

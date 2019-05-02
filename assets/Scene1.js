@@ -14,6 +14,7 @@ class Scene1 extends Phaser.Scene {
         this.load.json('levels', './assets/levels.json')
         this.load.image('bg', './assets/bg.png')
         this.load.atlas('expand', './assets/bomb_explosion.png', './assets/bomb_explosion.json')
+        this.load.audio('defeat', './assets/defeated.mp3')
     }
 
     create() {
@@ -363,6 +364,7 @@ class Scene1 extends Phaser.Scene {
                     this.expandMidRight.play('expand_right')
                     this.expandFarRight.play('expand_far_right')
                     this.physics.add.collider(this.player, this.expand, () => {
+                        this.sound.play("defeat", {volume: 0.7})
                         this.player.destroy()
                     })
                     // this.physics.add.collider(this.otherPlayer, this.expand, () => {
@@ -378,13 +380,34 @@ class Scene1 extends Phaser.Scene {
                     //     this.otherPlayer.destroy()
                     // })
                     this.physics.add.collider(this.player, this.expandFarRight, () => {
+                        this.sound.play("defeat", {volume: 0.7})
                         this.player.destroy()
+                       
                     })
                     this.physics.add.collider(this.player, this.expandMidRight, () =>{
+                        this.sound.play("defeat", {volume: 0.7})
                         this.player.destroy()
+                     
+                    })
+                    this.physics.world.collide(this.expandLeft, this.onworldBounds,() =>{
+                        this.sound.play("defeat", {volume: 0.7})
+                        this.expandRight.destroy()
+                       
+                    })
+                    this.physics.add.collider(this.player, this.expandFarLeft, () => {
+                        this.sound.play("defeat", {volume: 0.7})
+                        this.player.destroy()
+                       
+                    })
+                    this.physics.add.collider(this.player, this.expandMidLeft, () =>{
+                        this.sound.play("defeat", {volume: 0.7})
+                        this.player.destroy()
+                     
                     })
                     this.physics.world.collide(this.expandRight, this.onworldBounds,() =>{
+                        this.sound.play("defeat", {volume: 0.7})
                         this.expandRight.destroy()
+                       
                     })
                     bomb.destroy()
                     this.time.delayedCall(400, () => {
@@ -423,7 +446,7 @@ class Scene1 extends Phaser.Scene {
                     this.player.anims.play('left', true);
                 } if (cursors.right.isDown) {
                     this.player.setVelocityX(130)
-
+                    
                     this.player.anims.play('right', true);
                 } if (cursors.up.isDown) {
                     this.player.setVelocityY(-130)
