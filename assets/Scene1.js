@@ -17,6 +17,7 @@ class Scene1 extends Phaser.Scene {
         this.load.image('bg', './assets/bg.png')
         this.load.atlas('expand', './assets/bomb_explosion.png', './assets/bomb_explosion.json')
         this.load.audio('defeat', './assets/defeated.mp3')
+        this.load.audio('explode','./assets/bombsound.mp3')
     }
 
     create() {
@@ -317,7 +318,7 @@ class Scene1 extends Phaser.Scene {
                     bomb.setSize(32, 32, true)
                     self.physics.add.collider(self.player, bomb)
                     self.physics.add.collider(self.otherPlayer, bomb)
-
+                    self.sound.add("explode", {volume: 0.2})
                     let timedEvent = self.time.delayedCall(1200, function onEvent() {
                         bomb.destroy()
                         let expand = self.physics.add.sprite(bomb.x, bomb.y, 'expand', 'bommber_01_14.png')
@@ -357,6 +358,7 @@ class Scene1 extends Phaser.Scene {
                         self.physics.add.collider(self.otherPlayer, expand, () => {
                             let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
+                            
                         })
                         self.physics.add.collider(self.otherPlayer, expandRight, () => {
                             let music = self.sound.play("defeat", {volume: 0.7})
@@ -503,6 +505,7 @@ class Scene1 extends Phaser.Scene {
                 bomb.setOrigin(0)
                 // bomb.on('animationcomplete', animComplete, this)
                 this.time.delayedCall(1200, () => {
+                    this.sound.add("explode", {volume: 0.6})
                     this.expand = this.physics.add.sprite(bomb.x, bomb.y, 'expand', 'bommber_01_14.png')
                     this.expandRight = this.physics.add.sprite(bomb.x + 40, bomb.y, 'expand')
                     this.expandFarRight = this.physics.add.sprite(bomb.x + 120, bomb.y, 'expand')
@@ -551,6 +554,12 @@ class Scene1 extends Phaser.Scene {
                     // this.expandTop.play('expand_right')
                     this.expandMidRight.play('expand_right')
                     this.expandFarRight.play('expand_far_right')
+                    this.physics.add.collider(this.rocks, this.expandRight,()=> {
+                        this.expandRight.destroy()
+                        this.expandMidRight.destroy()
+                        this.expandFarRight.destroy()
+                        console.log('hit')
+                    })
                     
                     this.physics.add.collider(this.otherPlayer, this.expand, () => {
 
@@ -709,7 +718,7 @@ class Scene1 extends Phaser.Scene {
                             this.player.setCollideWorldBounds(true)
                         })
                     })
-
+                   
                     this.physics.add.collider(this.player, this.expandBottomFar, () => {
                         let music = this.sound.play("defeat", {volume: 0.7})
                        
@@ -756,8 +765,8 @@ class Scene1 extends Phaser.Scene {
                     anims: null
                 });
             }
-            if (this.bomb > 1) {
-
+            if (this.bomb > 2) {
+                this.bomb.destroy()
             }
 
             if (cursors.left.isDown) {
