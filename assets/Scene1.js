@@ -267,9 +267,9 @@ class Scene1 extends Phaser.Scene {
         let tilemap = map.addTilesetImage("tilesheet_cave", 'level_1')
         map.createStaticLayer('Ground', tilemap, 0, 0).setDepth(-1)
 
-        this.rocks = map.createStaticLayer('Top', tilemap, 0, 0)
+        this.rocks = map.createStaticLayer('Top', tilemap, 0, 0).setDepth(2)
         this.rocks.immovable = true;
-        this.rocks.setCollision([48, 56])
+        this.rocks.setCollision([ 56])
 
 
         this.physics.world.setBounds(-1, -1, 740, 730, true, true, true, true)
@@ -507,15 +507,16 @@ class Scene1 extends Phaser.Scene {
                     this.expandRight = this.physics.add.sprite(bomb.x + 40, bomb.y, 'expand')
                     this.expandFarRight = this.physics.add.sprite(bomb.x + 120, bomb.y, 'expand')
                     this.expandMidRight = this.physics.add.sprite(bomb.x + 80, bomb.y, 'expand')
-                    this.expandLeft = this.physics.add.sprite(bomb.x - 40, bomb.y, 'expand').setScale(-1)
-                    this.expandMidLeft = this.physics.add.sprite(bomb.x - 80, bomb.y, 'expand').setScale(-1)
-                    this.expandFarLeft = this.physics.add.sprite(bomb.x - 120, bomb.y, 'expand').setScale(-1)
+                    this.expandLeft = this.physics.add.sprite(bomb.x - 40, bomb.y, 'expand')
+                    this.expandMidLeft = this.physics.add.sprite(bomb.x - 80, bomb.y, 'expand')
+                    this.expandFarLeft = this.physics.add.sprite(bomb.x - 120, bomb.y, 'expand')
                     this.expandTop = this.physics.add.sprite(bomb.x, bomb.y - 40, 'expand')
                     this.expandTopMid = this.physics.add.sprite(bomb.x, bomb.y - 80, 'expand')
                     this.expandTopFar = this.physics.add.sprite(bomb.x, bomb.y - 120, 'expand')
                     this.expandBottom = this.physics.add.sprite(bomb.x, bomb.y + 40, 'expand')
                     this.expandMidBottom = this.physics.add.sprite(bomb.x, bomb.y + 80, 'expand')
                     this.expandBottomFar = this.physics.add.sprite(bomb.x, bomb.y + 120, 'expand')
+                    this.expandFarLeft.angle = 180
                     this.expand.setOrigin(0.5, 0.5)
                     this.expandTop.angle = 90
                     this.expandTopMid.angle = 90

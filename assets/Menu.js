@@ -22,7 +22,7 @@ class Menu extends Phaser.Scene {
         music.play()
         this.add.image(600, 350, 'bombs').setDepth(2)
         this.add.image(600, 400, 'away').setDepth(2)
-       let playButton = this.add.image(600, 700, "enter").setDepth(2)
+       let playButton = this.add.image(600, 800, "join").setDepth(2)
        let hoverSprite= this.add.sprite(100, 100, 'bomb', 'bomb2.png').setDepth(2)
        let bombSprite = this.add.sprite(100, 100, 'explosion', 'explosion_09.png').setDepth(2)
        bombSprite.setScale(2)
