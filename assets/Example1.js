@@ -12,7 +12,7 @@ class Example1 extends Phaser.Scene {
     create() {
     
     this.add.image(400, 300, 'bg')
-    player = this.add.sprite(100, 150, 'player', 'bomb11.png')
+    this.player = this.physics.add.sprite(100, 150, 'player', 'bomb11.png')
    this.anims.create({
         key:'idle',
        frameRate: 8,
@@ -77,31 +77,27 @@ class Example1 extends Phaser.Scene {
    
     }
     update() {
-        var player
-        var cursors
-        cursors = this.input.keyboard.createCursorKeys();
+       
+       let  cursors = this.input.keyboard.createCursorKeys();
         if (cursors.left.isDown)
 {
-    player.setVelocityX(-160);
+    this.player.setVelocityX(-160);
 
-    player.anims.play('left', true);
+    this.player.anims.play('left', true);
 }
 else if (cursors.right.isDown)
 {
-    player.setVelocityX(160);
+    this.player.setVelocityX(160);
 
-    player.anims.play('right', true);
+    this.player.anims.play('right', true);
 }
 else
 {
-    player.setVelocityX(0);
+    this.player.setVelocityX(0);
 
-    player.anims.play('idle');
+    this.player.anims.play('idle');
 }
 
-if (cursors.up.isDown && player.body.touching.down)
-{
-    player.setVelocityY(-330);
-}
+
     }
 }

@@ -16,10 +16,13 @@ class Scene1 extends Phaser.Scene {
         this.load.json('levels', './assets/levels.json')
         this.load.image('bg', './assets/bg.png')
         this.load.atlas('expand', './assets/bomb_explosion.png', './assets/bomb_explosion.json')
+        this.load.audio('defeat', './assets/defeated.mp3')
     }
 
     create() {
-        
+        var deathCount = 0
+        let deathCounter = this.add.text(400,20, "Time Died:" + deathCount, { fontFamily: '"Roboto Condensed"' , color: "#ffffff", fontSize: '30px'})
+        deathCounter.onWorldBounds = false
         this.input.keyboard.addKeys("W", "A", "S", "D")
         this.cameras.main.centerOn(400, 300)
         window.otherPlayer = this.otherPlayer
@@ -79,18 +82,7 @@ class Scene1 extends Phaser.Scene {
 
         }
 
-        this.anims.create({
-            key: 'idle',
-            frameRate: 8,
-            repeat: -1,
-            frames: this.anims.generateFrameNames('player', {
-                prefix: 'bomb',
-                suffix: '.png',
-                start: 11,
-                end: 14,
-                zeroPad: 2
-            })
-        })
+      
         this.anims.create({
             key: 'up',
             frameRate: 4,
@@ -130,28 +122,17 @@ class Scene1 extends Phaser.Scene {
         })
         this.anims.create({
             key: 'down',
-            frameRate: 4,
+            frameRate: 8,
             repeat: -1,
             frames: this.anims.generateFrameNames('player', {
                 prefix: 'bomb',
                 suffix: '.png',
-                start: 9,
+                start: 6,
                 end: 10,
-                zeroPad: 2
+                zeroPad: 1
             })
         })
-        this.anims.create({
-            key: 'idle',
-            frameRate: 4,
-            repeat: -1,
-            frames: this.anims.generateFrameNames('player', {
-                prefix: 'bomb',
-                suffix: '.png',
-                start: 11,
-                end: 14,
-                zeroPad: 2
-            })
-        })
+       
         this.anims.create({
             key: 'bomb',
             frameRate: 3,
@@ -178,7 +159,7 @@ class Scene1 extends Phaser.Scene {
         })
         this.anims.create({
             key: 'idle',
-            frameRate: 8,
+            frameRate: 4,
             repeat: -1,
             frames: this.anims.generateFrameNames('player', {
                 prefix: 'bomb',
@@ -296,28 +277,28 @@ class Scene1 extends Phaser.Scene {
             self.otherPlayers.getChildren().forEach(function (otherPlayer) {
                 if (playerInfo.playerId === otherPlayer.playerId) {
                     otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-                    if (this.otherPlayer.active === true) {
-                        let cursors = this.input.keyboard.createCursorKeys();
-                        let spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+                    if (self.otherPlayer.active === true) {
+                        let cursors = self.input.keyboard.createCursorKeys();
+                        let spaceBar = self.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
             
-                        if (cursors.left.isDown) {
+                        if (self.otherPlayer.x < self.otherPlayer.originX) {
             
             
-                            this.otherPlayer.anims.play('left2', true);
+                            self.otherPlayer.anims.play('left2', true);
                         } else if (cursors.right.isDown) {
             
             
-                            this.otherPlayer.anims.play('right2', true);
+                            self.otherPlayer.anims.play('right2', true);
                         } else if (cursors.up.isDown) {
             
             
-                            this.otherPlayer.anims.play('up2', true);
+                            self.otherPlayer.anims.play('up2', true);
                         } else if (cursors.down.isDown) {
             
-                            this.otherPlayer.anims.play('down2')
+                            self.otherPlayer.anims.play('down2')
                         } else {
             
-                            this.otherPlayer.anims.play('idle')
+                            self.otherPlayer.anims.play('idle2')
                         }
             
                     }
@@ -337,7 +318,7 @@ class Scene1 extends Phaser.Scene {
                     self.physics.add.collider(self.player, bomb)
                     self.physics.add.collider(self.otherPlayer, bomb)
 
-                    let timedEvent = self.time.delayedCall(900, function onEvent() {
+                    let timedEvent = self.time.delayedCall(1200, function onEvent() {
                         bomb.destroy()
                         let expand = self.physics.add.sprite(bomb.x, bomb.y, 'expand', 'bommber_01_14.png')
                         let expandRight = self.physics.add.sprite(bomb.x + 40, bomb.y, 'expand')
@@ -374,28 +355,62 @@ class Scene1 extends Phaser.Scene {
                         expandMidRight.play('expand_right')
                         expandFarRight.play('expand_far_right')
                         self.physics.add.collider(self.otherPlayer, expand, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
                         self.physics.add.collider(self.otherPlayer, expandRight, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidRight, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
                         self.physics.add.collider(self.otherPlayer, expandLeft, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidLeft, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
                         self.physics.add.collider(self.otherPlayer, expandFarLeft, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+
+                        self.physics.add.collider(self.otherPlayer, expandTopMid, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+                        self.physics.add.collider(self.otherPlayer, expandTop, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+                        self.physics.add.collider(self.otherPlayer, expandTopFar, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+                        self.physics.add.collider(self.otherPlayer, expandBottom, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+                        self.physics.add.collider(self.otherPlayer, expandMidBottom, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
+                            self.otherPlayer.destroy()
+                        })
+                        self.physics.add.collider(self.otherPlayer, expandBottomFar, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
 
                         self.physics.add.collider(self.otherPlayer, expandFarRight, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.otherPlayer.destroy()
                         })
+
                         self.physics.add.collider(self.player, expand, () => {
+                            let music = self.sound.play("defeat", {volume: 0.7})
                             self.player.destroy()
                         })
                         self.physics.add.collider(self.player, expandFarRight, () => {
@@ -423,6 +438,12 @@ class Scene1 extends Phaser.Scene {
                             expandLeft.destroy()
                             expandMidLeft.destroy()
                             expandFarLeft.destroy()
+                            expandTop.destroy()
+                            expandTopMid.destroy()
+                            expandTopFar.destroy()
+                            expandBottom.destroy()
+                            expandMidBottom.destroy()
+                            expandBottomFar.destroy()
 
                         })
 
@@ -431,12 +452,28 @@ class Scene1 extends Phaser.Scene {
                     //   bomb.setPosition(playerInfo.x, playerInfo.y);
                 }
             });
+
         });
+       
 
     }
     update() {
-        
-        if (this.player.active === true) {
+        function addPlayer(self, playerInfo) {
+
+            // self.physics.add.collide(player, rocks)
+
+            self.player = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player').setOrigin(0)
+            self.player.setCollideWorldBounds(true);
+            self.player.onWorldBounds = true;
+            self.physics.add.collider(self.player, self.rocks)
+
+            // self.physics.add.collider(self.player, otherPlayer)
+        }
+        if (this.player.active === false) {
+          
+          
+           }
+       else if (this.player.active === true) {
 
             var x = this.player.x;
             var y = this.player.y;
@@ -515,6 +552,7 @@ class Scene1 extends Phaser.Scene {
                     this.expandFarRight.play('expand_far_right')
                     
                     this.physics.add.collider(this.otherPlayer, this.expand, () => {
+
                         this.otherPlayer.destroy()
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandRight, () => {
@@ -536,46 +574,150 @@ class Scene1 extends Phaser.Scene {
                     this.physics.add.collider(this.otherPlayer, this.expandFarRight, () => {
                         this.otherPlayer.destroy()
                     })
+                    this.physics.add.collider(this.otherPlayer, this.expandBottom, () => {
+                        this.otherPlayer.destroy()
+                    })
+                    this.physics.add.collider(this.otherPlayer, this.expandMidBottom, () => {
+                        this.otherPlayer.destroy()
+                    })
+                    this.physics.add.collider(this.otherPlayer, this.expandBottomFar, () => {
+                        this.otherPlayer.destroy()
+                    })
+                    this.physics.add.collider(this.otherPlayer, this.expandTop, () => {
+                        this.otherPlayer.destroy()
+                    })
+                    this.physics.add.collider(this.otherPlayer, this.expandTopMid, () => {
+                        this.otherPlayer.destroy()
+                    })
+
+                    this.physics.add.collider(this.otherPlayer, this.expandTopFar, () => {
+                        this.otherPlayer.destroy()
+                    })
+                    
                     this.physics.add.collider(this.player, this.expand, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandFarRight, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                       
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                  
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandMidRight, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+             
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expandMidLeft, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                       
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandLeft, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                        
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expandFarLeft, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                       
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandTop, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                    
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expandTopMid, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                        
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandTopFar, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                        
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expandBottom, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                      
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                     this.physics.add.collider(this.player, this.expandMidBottom, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                       
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expandBottomFar, () => {
+                        let music = this.sound.play("defeat", {volume: 0.7})
+                       
                         this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                        })
                     })
                   
                 
@@ -617,36 +759,39 @@ class Scene1 extends Phaser.Scene {
 
             }
 
-            if (cursors.left.isDown === true) {
+            if (cursors.left.isDown) {
                 
-                this.player.anims.play('left');
+                this.player.anims.play('left', true);
                 this.player.setVelocityX(-170)
 
             }
-            if (cursors.right.isDown) {
+            else if (cursors.right.isDown) {
                 this.player.setVelocityX(170)
 
                 this.player.play('right', true);
             }
-            if (cursors.up.isDown) {
+            else if (cursors.up.isDown) {
                 this.player.setVelocityY(-170)
 
                 this.player.play('up', true);
             }
-            if (cursors.down.isDown) {
+            else if (cursors.down.isDown) {
                 this.player.setVelocityY(170)
 
                 this.player.play('down')
             }
-            if (cursors.down.isUp && cursors.up.isUp) {
+           if (cursors.down.isUp && cursors.up.isUp) {
 
                 this.player.setVelocityY(0)
-                this.player.play('idle')
+                
             }
             if (cursors.left.isUp && cursors.right.isUp) {
                 this.player.setVelocityX(0)
 
-                this.player.anims.play('idle')
+               
+            }
+            if (cursors.left.isUp && cursors.right.isUp && cursors.up.isUp && cursors.down.isUp) {
+                this.player.play('idle', true)
             }
         }
 
