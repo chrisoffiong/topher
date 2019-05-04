@@ -79,6 +79,12 @@ io.on('connection', function (socket) {
     // emit a message to all players about the player that moved
     socket.broadcast.emit('playerRight', players[socket.id]);
   })
+  socket.on('idle', function (idleData) {
+    players[socket.id].x = idleData.x;
+    players[socket.id].y = idleData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerIdle', players[socket.id]);
+  })
 });
 var port = process.env.PORT || 8080
 server.listen(port, function () {

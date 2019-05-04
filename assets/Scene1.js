@@ -24,7 +24,7 @@ class Scene1 extends Phaser.Scene {
     }
 
     create() {
-        // let splash = this.add.sprite(600,500, 'splash')
+        // let splash = this.add.sprite(600,200, 'splash')
         // splash.depth = -3
         
         this.powerUpActive = false
@@ -63,7 +63,7 @@ class Scene1 extends Phaser.Scene {
             self.player.setCollideWorldBounds(true);
             self.player.onWorldBounds = true;
             self.physics.add.collider(self.player, self.rocks)
-
+            
             self.physics.add.collider(self.powerup, self.player, () => {
                 self.powerUpActive = true
                 self.powerup.visible = false
@@ -407,6 +407,14 @@ class Scene1 extends Phaser.Scene {
                 }
             })
         })
+        this.socket.on('playerIdle', function (playerInfo) {
+
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.otherPlayer.play('idle2', true)
+                }
+            })
+        })
         this.socket.on('Bomb', function (playerInfo) {
 
             self.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -559,23 +567,53 @@ class Scene1 extends Phaser.Scene {
                             })
                             self.deathCount++
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
                         self.physics.add.collider(self.player, expandFarRight, () => {
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
                         self.physics.add.collider(self.player, expandMidRight, () => {
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
 
                         self.physics.add.collider(self.player, expandMidLeft, () => {
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
                         self.physics.add.collider(self.player, expandLeft, () => {
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
 
                         self.physics.add.collider(self.player, expandFarLeft, () => {
                             self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandTop, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandTopMid, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandTopFar, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandBottom, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandBottomFar, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
+                        })
+                        self.physics.add.collider(self.player, expandMidBottom, () => {
+                            self.player.destroy()
+                            addPlayer(self, playerInfo);
                         })
                         let newTimeEvent = self.time.delayedCall(800, () => {
                             expand.destroy()
@@ -927,7 +965,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -968,7 +1006,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1008,7 +1046,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1049,7 +1087,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1089,7 +1127,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1130,7 +1168,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1170,7 +1208,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1211,7 +1249,7 @@ class Scene1 extends Phaser.Scene {
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(200, 450, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1332,6 +1370,11 @@ class Scene1 extends Phaser.Scene {
 
             }
             if (cursors.left.isUp && cursors.right.isUp && cursors.up.isUp && cursors.down.isUp) {
+                this.socket.emit('idle', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
+
                 this.player.play('idle', true)
             }
         }
