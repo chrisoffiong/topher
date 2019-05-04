@@ -6,7 +6,9 @@ class Scene1 extends Phaser.Scene {
         })
     }
 
+
     preload() {
+        this.load.image('splash', './assets/backgroundbackground.png')
         this.load.atlas('player', './assets/sprites.png', './assets/sprites.json')
         this.load.image('level_1', './assets/maps/tilesheet_cave.png')
         this.load.tilemapTiledJSON('map2', '/assets/maps/real.json')
@@ -17,13 +19,22 @@ class Scene1 extends Phaser.Scene {
         this.load.image('bg', './assets/bg.png')
         this.load.atlas('expand', './assets/bomb_explosion.png', './assets/bomb_explosion.json')
         this.load.audio('defeat', './assets/defeated.mp3')
-        this.load.audio('explode','./assets/bombsound.mp3')
+        this.load.audio('explode', './assets/bombsound.mp3')
+        this.load.image('powerup', './assets/powerup.png')
     }
 
     create() {
-        var deathCount = 0
-        let deathCounter = this.add.text(400,20, "Time Died:" + deathCount, { fontFamily: '"Roboto Condensed"' , color: "#ffffff", fontSize: '30px'})
-        deathCounter.onWorldBounds = false
+        // let splash = this.add.sprite(600,500, 'splash')
+        // splash.depth = -3
+        
+        this.powerUpActive = false
+        this.deathCount = 0
+        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+            fontFamily: "Roboto Condensed",
+            color: "#ffffff",
+            fontSize: '30px'
+        })
+        this.deathCounter.onWorldBounds = false
         this.input.keyboard.addKeys("W", "A", "S", "D")
         this.cameras.main.centerOn(400, 300)
         window.otherPlayer = this.otherPlayer
@@ -41,7 +52,8 @@ class Scene1 extends Phaser.Scene {
                 }
             });
         });
-
+        this.powerup = self.physics.add.image(400, 400, 'powerup')
+        this.powerup.immovable = true
 
         function addPlayer(self, playerInfo) {
 
@@ -52,8 +64,31 @@ class Scene1 extends Phaser.Scene {
             self.player.onWorldBounds = true;
             self.physics.add.collider(self.player, self.rocks)
 
+            self.physics.add.collider(self.powerup, self.player, () => {
+                self.powerUpActive = true
+                self.powerup.visible = false
+                self.powerup.active = false
+                self.socket.emit(
+                    'powerup', {
+                        x: self.player.x,
+                        y: self.player.y
+                    }
+                )
+                self.time.delayedCall(6000, () => {
+                    self.powerUpActive = false
+                    self.powerup.active = true
+                    self.powerup.visible = true
+                    self.powerup.x = 400
+                    self.powerup.y = 400
+                    self.powerup.setVelocityX(0)
+                    self.powerup.setVelocityY(0)
+                    self.powerup.immovable = true
+
+                })
+            })
             // self.physics.add.collider(self.player, otherPlayer)
         }
+
         this.otherPlayers = this.physics.add.group();
         this.socket.on('currentPlayers', function (players) {
             Object.keys(players).forEach(function (id) {
@@ -83,7 +118,7 @@ class Scene1 extends Phaser.Scene {
 
         }
 
-      
+
         this.anims.create({
             key: 'up',
             frameRate: 4,
@@ -133,7 +168,7 @@ class Scene1 extends Phaser.Scene {
                 zeroPad: 1
             })
         })
-       
+
         this.anims.create({
             key: 'bomb',
             frameRate: 3,
@@ -177,22 +212,22 @@ class Scene1 extends Phaser.Scene {
             frames: this.anims.generateFrameNames('player2', {
                 prefix: 'bombs',
                 suffix: '.png',
-                start: 21,
-                end: 23,
+                start: 10,
+                end: 12,
                 zeroPad: 2
             })
         })
 
         this.anims.create({
             key: 'left2',
-            frameRate: 8,
+            frameRate: 5,
             repeat: -1,
             frames: this.anims.generateFrameNames('player2', {
                 prefix: 'bombs',
                 suffix: '.png',
-                start: 15,
-                end: 17,
-                zeroPad: 2
+                start: 4,
+                end: 6,
+                zeroPad: 1
             })
         })
         this.anims.create({
@@ -202,9 +237,9 @@ class Scene1 extends Phaser.Scene {
             frames: this.anims.generateFrameNames('player2', {
                 prefix: 'bombs',
                 suffix: '.png',
-                start: 18,
-                end: 20,
-                zeroPad: 2
+                start: 7,
+                end: 9,
+                zeroPad: 1
             })
         })
         this.anims.create({
@@ -214,8 +249,8 @@ class Scene1 extends Phaser.Scene {
             frames: this.anims.generateFrameNames('player2', {
                 prefix: 'bombs',
                 suffix: '.png',
-                start: 9,
-                end: 10,
+                start: 22,
+                end: 24,
                 zeroPad: 2
             })
         })
@@ -263,6 +298,18 @@ class Scene1 extends Phaser.Scene {
                 zeroPad: 2
             })
         })
+        this.anims.create({
+            key: 'death',
+            frameRate: 4,
+            repeat: -1,
+            frames: this.anims.generateFrameNames('player', {
+                prefix: 'bomb',
+                suffix: '.png',
+                start: 2,
+                end: 5,
+                zeroPad: 1
+            })
+        })
 
         let map = this.add.tilemap('map2')
         let tilemap = map.addTilesetImage("tilesheet_cave", 'level_1')
@@ -270,9 +317,28 @@ class Scene1 extends Phaser.Scene {
 
         this.rocks = map.createStaticLayer('Top', tilemap, 0, 0).setDepth(2)
         this.rocks.immovable = true;
-        this.rocks.setCollision([ 56])
+        this.rocks.setCollision([56])
 
+        this.socket.on('powerupTaken', function (playerInfo) {
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.powerup.visible = false
+                    self.powerup.active = false
+                    self.time.delayedCall(6000, () => {
 
+                        self.powerup.active = true
+                        self.powerup.visible = true
+                        self.powerup.x = 400
+                        self.powerup.y = 400
+                        self.powerup.setVelocityX(0)
+                        self.powerup.setVelocityY(0)
+                        self.powerup.immovable = true
+
+                    })
+
+                }
+            })
+        })
         this.physics.world.setBounds(-1, -1, 740, 730, true, true, true, true)
         this.socket.on('playerMoved', function (playerInfo) {
             self.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -281,34 +347,68 @@ class Scene1 extends Phaser.Scene {
                     if (self.otherPlayer.active === true) {
                         let cursors = self.input.keyboard.createCursorKeys();
                         let spaceBar = self.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-            
-                        if (self.otherPlayer.x < self.otherPlayer.originX) {
-            
-            
-                            self.otherPlayer.anims.play('left2', true);
-                        } else if (cursors.right.isDown) {
-            
-            
-                            self.otherPlayer.anims.play('right2', true);
-                        } else if (cursors.up.isDown) {
-            
-            
-                            self.otherPlayer.anims.play('up2', true);
-                        } else if (cursors.down.isDown) {
-            
-                            self.otherPlayer.anims.play('down2')
-                        } else {
-            
-                            self.otherPlayer.anims.play('idle2')
-                        }
-            
+
+                        // if (self.otherPlayer) {
+                        //     if (cursors.left.isDown) {
+
+                        //         self.otherPlayer.anims.play('left2', true);
+                        //     } else if (cursors.right.isDown) {
+
+
+                        //         self.otherPlayer.anims.play('right2', true);
+                        //     } else if (cursors.up.isDown) {
+
+
+                        //         self.otherPlayer.anims.play('up2', true);
+                        //     } else if (cursors.down.isDown) {
+
+                        //         self.otherPlayer.anims.play('down2')
+                        //     } else {
+
+                        //         self.otherPlayer.anims.play('idle2')
+                        //     }
+
+                        // }
                     }
+
                 }
             });
         });
 
+        this.socket.on('playerLeft', function (playerInfo) {
+
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.otherPlayer.play('left2', true)
+                }
+            })
+        })
+        this.socket.on('playerRight', function (playerInfo) {
+
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.otherPlayer.play('right2', true)
+                }
+            })
+        })
+        this.socket.on('playerUp', function (playerInfo) {
+
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.otherPlayer.play('up2', true)
+                }
+            })
+        })
+        this.socket.on('playerDown', function (playerInfo) {
+
+            self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+                if (playerInfo.playerId === otherPlayer.playerId) {
+                    self.otherPlayer.play('down2', true)
+                }
+            })
+        })
         this.socket.on('Bomb', function (playerInfo) {
-            console.log('Bomb', playerInfo)
+
             self.otherPlayers.getChildren().forEach(function (otherPlayer) {
                 if (playerInfo.playerId === otherPlayer.playerId) {
                     console.log(self.bomb)
@@ -318,7 +418,9 @@ class Scene1 extends Phaser.Scene {
                     bomb.setSize(32, 32, true)
                     self.physics.add.collider(self.player, bomb)
                     self.physics.add.collider(self.otherPlayer, bomb)
-                    self.sound.add("explode", {volume: 0.2})
+                    self.sound.add("explode", {
+                        volume: 0.2
+                    })
                     let timedEvent = self.time.delayedCall(1200, function onEvent() {
                         bomb.destroy()
                         let expand = self.physics.add.sprite(bomb.x, bomb.y, 'expand', 'bommber_01_14.png')
@@ -356,63 +458,106 @@ class Scene1 extends Phaser.Scene {
                         expandMidRight.play('expand_right')
                         expandFarRight.play('expand_far_right')
                         self.physics.add.collider(self.otherPlayer, expand, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
-                            
+                            addOtherPlayers(self, playerInfo)
+
                         })
                         self.physics.add.collider(self.otherPlayer, expandRight, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidRight, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandLeft, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidLeft, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandFarLeft, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
 
                         self.physics.add.collider(self.otherPlayer, expandTopMid, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandTop, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandTopFar, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandBottom, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidBottom, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
                         self.physics.add.collider(self.otherPlayer, expandBottomFar, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
                         })
 
                         self.physics.add.collider(self.otherPlayer, expandFarRight, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
                             self.otherPlayer.destroy()
+                            addOtherPlayers(self, playerInfo)
+
                         })
 
                         self.physics.add.collider(self.player, expand, () => {
-                            let music = self.sound.play("defeat", {volume: 0.7})
+                            let music = self.sound.play("defeat", {
+                                volume: 0.7
+                            })
+                            self.deathCount++
                             self.player.destroy()
                         })
                         self.physics.add.collider(self.player, expandFarRight, () => {
@@ -456,7 +601,7 @@ class Scene1 extends Phaser.Scene {
             });
 
         });
-       
+
 
     }
     update() {
@@ -471,11 +616,8 @@ class Scene1 extends Phaser.Scene {
 
             // self.physics.add.collider(self.player, otherPlayer)
         }
-        if (this.player.active === false) {
-          
-          
-           }
-       else if (this.player.active === true) {
+
+        if (this.player.active === true) {
 
             var x = this.player.x;
             var y = this.player.y;
@@ -498,6 +640,10 @@ class Scene1 extends Phaser.Scene {
 
 
             if (space) {
+                this.socket.emit('Bombset', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
 
                 let bomb = this.add.sprite(this.player.x, this.player.y, 'bomb', 'bomb2.png')
                 bomb.anims.play('bomb')
@@ -505,7 +651,9 @@ class Scene1 extends Phaser.Scene {
                 bomb.setOrigin(0)
                 // bomb.on('animationcomplete', animComplete, this)
                 this.time.delayedCall(1200, () => {
-                    this.sound.add("explode", {volume: 0.6})
+                    this.sound.add("explode", {
+                        volume: 0.6
+                    })
                     this.expand = this.physics.add.sprite(bomb.x, bomb.y, 'expand', 'bommber_01_14.png')
                     this.expandRight = this.physics.add.sprite(bomb.x + 40, bomb.y, 'expand')
                     this.expandFarRight = this.physics.add.sprite(bomb.x + 120, bomb.y, 'expand')
@@ -554,13 +702,13 @@ class Scene1 extends Phaser.Scene {
                     // this.expandTop.play('expand_right')
                     this.expandMidRight.play('expand_right')
                     this.expandFarRight.play('expand_far_right')
-                    this.physics.add.collider(this.rocks, this.expandRight,()=> {
+                    this.physics.add.collider(this.rocks, this.expandRight, () => {
                         this.expandRight.destroy()
                         this.expandMidRight.destroy()
                         this.expandFarRight.destroy()
                         console.log('hit')
                     })
-                    
+
                     this.physics.add.collider(this.otherPlayer, this.expand, () => {
 
                         this.otherPlayer.destroy()
@@ -603,136 +751,493 @@ class Scene1 extends Phaser.Scene {
                     this.physics.add.collider(this.otherPlayer, this.expandTopFar, () => {
                         this.otherPlayer.destroy()
                     })
-                    
+
                     this.physics.add.collider(this.player, this.expand, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandFarRight, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                       
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                  
-                            this.player = this.physics.add.sprite(400,400, 'player')
+
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandMidRight, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-             
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
-
                     this.physics.add.collider(this.player, this.expandMidLeft, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                       
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandLeft, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                        
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
 
                     this.physics.add.collider(this.player, this.expandFarLeft, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                       
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandTop, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                    
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
 
                     this.physics.add.collider(this.player, this.expandTopMid, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                        
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandTopFar, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                        
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
 
                     this.physics.add.collider(this.player, this.expandBottom, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                      
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
                         })
                     })
                     this.physics.add.collider(this.player, this.expandMidBottom, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                       
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
+                            this.player = this.physics.add.sprite(500, 400, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
-                        })
-                    })
-                   
-                    this.physics.add.collider(this.player, this.expandBottomFar, () => {
-                        let music = this.sound.play("defeat", {volume: 0.7})
-                       
-                        this.player.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(400,400, 'player')
-                            this.physics.add.collider(this.player, this.rocks)
-                            this.player.setCollideWorldBounds(true)
-                        })
-                    })
-                  
-                
-              
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
 
+                                })
+                            })
+                        })
+                    })
+
+                    this.physics.add.collider(this.player, this.expandBottomFar, () => {
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            fontFamily: "Roboto Condensed",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
+                        this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
+                    })
                     bomb.destroy()
                     this.time.delayedCall(1000, () => {
                         this.expand.destroy()
@@ -748,13 +1253,10 @@ class Scene1 extends Phaser.Scene {
                         this.expandBottom.destroy()
                         this.expandMidBottom.destroy()
                         this.expandBottomFar.destroy()
-                    })
-                }, [], this)
-                this.socket.emit('Bombset', {
-                    x: this.player.x,
-                    y: this.player.y
-                })
 
+                    }, [], this)
+                
+                })
             }
 
             function animComplete(animation, frame) {
@@ -765,40 +1267,69 @@ class Scene1 extends Phaser.Scene {
                     anims: null
                 });
             }
-            if (this.bomb > 2) {
-                this.bomb.destroy()
-            }
 
             if (cursors.left.isDown) {
-                
-                this.player.anims.play('left', true);
-                this.player.setVelocityX(-170)
+                this.socket.emit('Left', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
 
-            }
-            else if (cursors.right.isDown) {
-                this.player.setVelocityX(170)
+                this.player.anims.play('left', true);
+                if (this.powerUpActive === true) {
+                    this.player.setVelocityX(-300)
+                } else {
+                    this.player.setVelocityX(-170)
+                }
+            } else if (cursors.right.isDown) {
+                this.socket.emit('Right', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
 
                 this.player.play('right', true);
-            }
-            else if (cursors.up.isDown) {
-                this.player.setVelocityY(-170)
+                if (this.powerUpActive === true) {
+                    this.player.setVelocityX(300)
+                } else {
+                    this.player.setVelocityX(170)
+                }
+
+
+            } else if (cursors.up.isDown) {
+                this.socket.emit('Up', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
 
                 this.player.play('up', true);
-            }
-            else if (cursors.down.isDown) {
-                this.player.setVelocityY(170)
+                if (this.powerUpActive === true) {
+                    this.player.setVelocityY(-300)
+                } else {
+                    this.player.setVelocityY(-170)
+                }
 
-                this.player.play('down')
+            } else if (cursors.down.isDown) {
+                this.socket.emit('Down', {
+                    x: this.player.x,
+                    y: this.player.y
+                })
+
+                this.player.play('down', true)
+                if (this.powerUpActive === true) {
+                    this.player.setVelocityY(300)
+                } else {
+                    this.player.setVelocityY(170)
+                }
+
             }
-           if (cursors.down.isUp && cursors.up.isUp) {
+            if (cursors.down.isUp && cursors.up.isUp) {
 
                 this.player.setVelocityY(0)
-                
+
             }
             if (cursors.left.isUp && cursors.right.isUp) {
                 this.player.setVelocityX(0)
 
-               
+
             }
             if (cursors.left.isUp && cursors.right.isUp && cursors.up.isUp && cursors.down.isUp) {
                 this.player.play('idle', true)

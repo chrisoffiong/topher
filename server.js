@@ -49,6 +49,36 @@ io.on('connection', function (socket) {
     // emit a message to all players about the player that set a bomb
     socket.broadcast.emit('Bomb', players[socket.id]);
   });
+  socket.on('powerup', function (powerupData) {
+    players[socket.id].x = powerupData.x;
+    players[socket.id].y = powerupData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('powerupTaken', players[socket.id]);
+  })
+  socket.on('Left', function (leftData) {
+    players[socket.id].x = leftData.x;
+    players[socket.id].y = leftData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerLeft', players[socket.id]);
+  })
+  socket.on('Down', function (downData) {
+    players[socket.id].x = downData.x;
+    players[socket.id].y = downData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerDown', players[socket.id]);
+  })
+  socket.on('Up', function (upData) {
+    players[socket.id].x = upData.x;
+    players[socket.id].y = upData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerUp', players[socket.id]);
+  })
+  socket.on('Right', function (rightData) {
+    players[socket.id].x = rightData.x;
+    players[socket.id].y = rightData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerRight', players[socket.id]);
+  })
 });
 var port = process.env.PORT || 8080
 server.listen(port, function () {
