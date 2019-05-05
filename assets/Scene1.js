@@ -676,7 +676,7 @@ class Scene1 extends Phaser.Scene {
                         self.physics.add.collider(self.player, expandTopFar, () => {
                             self.deathCount++
                             self.deathCounter.destroy()
-                            self.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
                                 fontFamily: "Roboto Condensed",
                                 color: "#ffffff",
                                 fontSize: '30px'
@@ -687,7 +687,7 @@ class Scene1 extends Phaser.Scene {
                         self.physics.add.collider(self.player, expandBottom, () => {
                             self.deathCount++
                             self.deathCounter.destroy()
-                            self.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
                                 fontFamily: "Roboto Condensed",
                                 color: "#ffffff",
                                 fontSize: '30px'
@@ -698,7 +698,7 @@ class Scene1 extends Phaser.Scene {
                         self.physics.add.collider(self.player, expandBottomFar, () => {
                             self.deathCount++
                             self.deathCounter.destroy()
-                            self.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
+                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
                                 fontFamily: "Roboto Condensed",
                                 color: "#ffffff",
                                 fontSize: '30px'
