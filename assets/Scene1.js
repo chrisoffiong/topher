@@ -56,7 +56,6 @@ class Scene1 extends Phaser.Scene {
         window.bomb = this.bomb
         console.log(this)
         var self = this;
-        this.otherPlayer = this.physics.add.sprite(300, 400, 'player2')
         this.player = this.physics.add.sprite(300, 400, 'player')
         
         this.socket = io();
@@ -127,7 +126,7 @@ class Scene1 extends Phaser.Scene {
         });
 
         function addOtherPlayers(self, playerInfo) {
-            self.otherPlayer = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player2')
+            self.otherPlayer = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player2').setOrigin(0)
             self.otherPlayer.playerId = playerInfo.playerId;
             self.otherPlayers.add(self.otherPlayer);
 
