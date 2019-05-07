@@ -22,9 +22,9 @@ class Scene1 extends Phaser.Scene {
         this.load.audio('drop','./assets/drop.mp3')
         this.load.audio('speedup', '/assets/speedup.mp3')
         this.load.audio('bg_music', './assets/bg_music.mp3')
-        this.load.image('3', './assets/3.png')
-        this.load.image('2', './assets/2.png')
-        this.load.image('1', './assets/1.png')
+        this.load.image('3', './assets/three.png')
+        this.load.image('2', './assets/two.png')
+        this.load.image('1', './assets/one.png')
     }
     text() {
         this.deathText = this.add.text(210, 310, "Respawn in ....", {
