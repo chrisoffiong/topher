@@ -22,17 +22,36 @@ class Scene1 extends Phaser.Scene {
         this.load.audio('drop','./assets/drop.mp3')
         this.load.audio('speedup', '/assets/speedup.mp3')
         this.load.audio('bg_music', './assets/bg_music.mp3')
+        this.load.image('3', './assets/3.png')
+        this.load.image('2', './assets/2.png')
+        this.load.image('1', './assets/1.png')
     }
-
+    text() {
+        this.deathText = this.add.text(210, 310, "Respawn in ....", {
+            fontFamily: "Helvetica",
+            fontSize: "60px"
+        }).setDepth(4)
+        this.deathNumber = this.add.image(370, 430, "3").setDepth(3)
+        this.time.delayedCall(1000, () =>{ 
+            this.deathNumber.destroy()
+            this.deathNumber = this.add.image(370, 430, "2").setDepth(3).setDepth(3)
+            this.time.delayedCall(1000, () =>{ 
+                this.deathNumber.destroy()
+                this.deathNumber = this.add.image(370, 430, "1").setDepth(3).setDepth(3)
+                this.time.delayedCall(500, () =>{ 
+                    this.deathNumber.destroy()
+                    this.deathText.destroy()
+                    
+                })
+            })
+        })
+    }
     create() {
         // let splash = this.add.sprite(600,200, 'splash')
         // splash.depth = -3
         this.bombsLeft = 2
-        this.bombTimer = this.time.delayedCall(700, ()=>{
-            this.bombsLeft++
-        })
-        this.bombText = this.add.text(100, 20, "Bombs Left:" + this.bombsLeft, {
-            fontFamily: "Roboto Condensed",
+        this.bombText = this.add.text(50, 20, "Bombs Left: " + this.bombsLeft, {
+            fontFamily: "Helvetica",
             color: "#ffffff",
             fontSize: '30px'
         })
@@ -40,11 +59,11 @@ class Scene1 extends Phaser.Scene {
         this.explode = this.sound.add('explode', {volume: 0.4})
         this.drop = this.sound.add("drop", {volume: 0.2})
         this.powerUpActive = false
-        this.bg = this.sound.add('bg_music', {volume: 0.1})
+        this.bg = this.sound.add('bg_music', {volume: 0.1, loop: true})
         this.bg.play()
         this.deathCount = 0
-        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-            fontFamily: "Roboto Condensed",
+        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+            fontFamily: "Helvetica",
             color: "#ffffff",
             fontSize: '30px'
         })
@@ -56,6 +75,7 @@ class Scene1 extends Phaser.Scene {
         window.bomb = this.bomb
         console.log(this)
         var self = this;
+        this.otherPlayer = this.physics.add.sprite(300, 400, 'player2')
         this.player = this.physics.add.sprite(300, 400, 'player')
         
         this.socket = io();
@@ -126,7 +146,7 @@ class Scene1 extends Phaser.Scene {
         });
 
         function addOtherPlayers(self, playerInfo) {
-            self.otherPlayer = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'player2').setOrigin(0)
+            self.otherPlayer = self.physics.add.sprite(20, 20, 'player2').setOrigin(0)
             self.otherPlayer.playerId = playerInfo.playerId;
             self.otherPlayers.add(self.otherPlayer);
 
@@ -487,7 +507,9 @@ class Scene1 extends Phaser.Scene {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
+                            self.time.delayedCall(3000, () => {
                             addOtherPlayers(self, playerInfo)
+                            })
 
                         })
                         self.physics.add.collider(self.otherPlayer, expandRight, () => {
@@ -495,35 +517,46 @@ class Scene1 extends Phaser.Scene {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
+                                
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidRight, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandLeft, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidLeft, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandFarLeft, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
 
                         self.physics.add.collider(self.otherPlayer, expandTopMid, () => {
@@ -531,42 +564,54 @@ class Scene1 extends Phaser.Scene {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandTop, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandTopFar, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandBottom, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandMidBottom, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
                         self.physics.add.collider(self.otherPlayer, expandBottomFar, () => {
                             let music = self.sound.play("defeat", {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
                         })
 
                         self.physics.add.collider(self.otherPlayer, expandFarRight, () => {
@@ -574,7 +619,9 @@ class Scene1 extends Phaser.Scene {
                                 volume: 0.7
                             })
                             self.otherPlayer.destroy()
-                            addOtherPlayers(self, playerInfo)
+                            self.time.delayedCall(3000, () => {
+                                addOtherPlayers(self, playerInfo)
+                                })
 
                         })
 
@@ -583,9 +630,10 @@ class Scene1 extends Phaser.Scene {
                                 volume: 0.7
                             })
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -594,9 +642,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandFarRight, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -606,9 +655,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandMidRight, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -618,9 +668,10 @@ class Scene1 extends Phaser.Scene {
 
                         self.physics.add.collider(self.player, expandMidLeft, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -629,9 +680,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandLeft, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -641,9 +693,10 @@ class Scene1 extends Phaser.Scene {
 
                         self.physics.add.collider(self.player, expandFarLeft, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -652,9 +705,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandTop, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -663,9 +717,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandTopMid, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -674,9 +729,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandTopFar, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -685,9 +741,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandBottom, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -696,9 +753,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandBottomFar, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = self.add.text(400, 20, "Time Died:" + self.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -707,9 +765,10 @@ class Scene1 extends Phaser.Scene {
                         })
                         self.physics.add.collider(self.player, expandMidBottom, () => {
                             self.deathCount++
+                            self.text()
                             self.deathCounter.destroy()
-                            self.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                                fontFamily: "Roboto Condensed",
+                            self.deathCounter = self.add.text(550, 20, "Deaths: " + self.deathCount, {
+                                fontFamily: "Helvetica",
                                 color: "#ffffff",
                                 fontSize: '30px'
                             })
@@ -777,9 +836,25 @@ class Scene1 extends Phaser.Scene {
 
 
 
-
+            if(this.bombsLeft > 0) {
             if (space) {
-                
+                this.bombsLeft--
+                this.bombText.destroy()
+                this.bombText = this.add.text(50, 20, "Bombs Left: " + this.bombsLeft, {
+                    fontFamily: "Helvetica",
+                    color: "#ffffff",
+                    fontSize: '30px'
+                })
+                this.time.delayedCall(3000, ()=> {
+                    this.bombsLeft++
+                    this.bombText.destroy()
+                    this.bombText = this.bombText = this.add.text(50, 20, "Bombs Left: " + this.bombsLeft, {
+                        fontFamily: "Helvetica",
+                        color: "#ffffff",
+                        fontSize: '30px'
+                    })
+
+                })
                 this.socket.emit('Bombset', {
                     x: this.player.x,
                     y: this.player.y
@@ -851,44 +926,408 @@ class Scene1 extends Phaser.Scene {
                     this.physics.add.collider(this.otherPlayer, this.expand, () => {
 
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandRight, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidRight, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandLeft, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidLeft, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandFarLeft, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
 
                     this.physics.add.collider(this.otherPlayer, this.expandFarRight, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandBottom, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidBottom, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandBottomFar, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandTop, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandTopMid, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
 
                     this.physics.add.collider(this.otherPlayer, this.expandTopFar, () => {
                         this.otherPlayer.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
+                            this.otherPlayers.add(this.otherPlayer)
+                            this.physics.add.collider(this.otherPlayer, this.rocks)
+                            this.otherPlayer.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
                     })
 
                     this.physics.add.collider(this.player, this.expand, () => {
@@ -896,16 +1335,17 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.player.play('defeat', true)
+                        this.text()
                         this.deathCount++
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -936,17 +1376,18 @@ class Scene1 extends Phaser.Scene {
                         let music = this.sound.play("defeat", {
                             volume: 0.7
                         })
+                        this.text()
                         this.deathCount++
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
 
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -975,9 +1416,10 @@ class Scene1 extends Phaser.Scene {
                     })
                     this.physics.add.collider(this.player, this.expandMidRight, () => {
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
@@ -987,7 +1429,7 @@ class Scene1 extends Phaser.Scene {
 
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1019,15 +1461,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(500, 400, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1059,15 +1502,57 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
+                            this.physics.add.collider(this.player, this.rocks)
+                            this.player.setCollideWorldBounds(true)
+                            this.physics.add.collider(this.powerup, this.player, () => {
+                                this.powerUpActive = true
+                                this.powerup.visible = false
+                                this.powerup.active = false
+                                this.socket.emit(
+                                    'powerup', {
+                                        x: this.player.x,
+                                        y: this.player.y
+                                    }
+                                )
+                                this.time.delayedCall(6000, () => {
+                                    this.powerUpActive = false
+                                    this.powerup.active = true
+                                    this.powerup.visible = true
+                                    this.powerup.x = 400
+                                    this.powerup.y = 400
+                                    this.powerup.setVelocityX(0)
+                                    this.powerup.setVelocityY(0)
+                                    this.powerup.immovable = true
+
+                                })
+                            })
+                        })
+                    })
+                    this.physics.add.collider(this.player, this.expandRight, () => {
+                        let music = this.sound.play("defeat", {
+                            volume: 0.7
+                        })
+                        this.deathCount++
+                        this.text()
+                        this.deathCounter.destroy()
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
+                            color: "#ffffff",
+                            fontSize: '30px'
+                        })
+                        this.player.destroy()
+                        this.time.delayedCall(3000, () => {
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1095,20 +1580,22 @@ class Scene1 extends Phaser.Scene {
                         })
                     })
 
+
                     this.physics.add.collider(this.player, this.expandFarLeft, () => {
                         let music = this.sound.play("defeat", {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1140,15 +1627,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1181,15 +1669,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1221,15 +1710,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1262,15 +1752,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1302,15 +1793,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1343,15 +1835,16 @@ class Scene1 extends Phaser.Scene {
                             volume: 0.7
                         })
                         this.deathCount++
+                        this.text()
                         this.deathCounter.destroy()
-                        this.deathCounter = this.add.text(400, 20, "Time Died:" + this.deathCount, {
-                            fontFamily: "Roboto Condensed",
+                        this.deathCounter = this.add.text(550, 20, "Deaths: " + this.deathCount, {
+                            fontFamily: "Helvetica",
                             color: "#ffffff",
                             fontSize: '30px'
                         })
                         this.player.destroy()
                         this.time.delayedCall(3000, () => {
-                            this.player = this.physics.add.sprite(200, 450, 'player')
+                            this.player = this.physics.add.sprite(20, 20, 'player')
                             this.physics.add.collider(this.player, this.rocks)
                             this.player.setCollideWorldBounds(true)
                             this.physics.add.collider(this.powerup, this.player, () => {
@@ -1399,6 +1892,7 @@ class Scene1 extends Phaser.Scene {
                 })
             }
 
+        }
             function animComplete(animation, frame) {
                 //  Animation is over, let's fade the sprite out
                 this.tweens.add({

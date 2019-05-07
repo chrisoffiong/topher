@@ -85,6 +85,12 @@ io.on('connection', function (socket) {
     // emit a message to all players about the player that moved
     socket.broadcast.emit('playerIdle', players[socket.id]);
   })
+  socket.on('playerDied', function (deadData) {
+    players[socket.id].x = deadData.x;
+    players[socket.id].y = deadData.y;
+    // emit a message to all players about the player that moved
+    socket.broadcast.emit('playerRevive', players[socket.id]);
+  })
 });
 var port = process.env.PORT || 8080
 server.listen(port, function () {
