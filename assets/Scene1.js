@@ -75,7 +75,7 @@ class Scene1 extends Phaser.Scene {
         window.bomb = this.bomb
         console.log(this)
         var self = this;
-        this.otherPlayer = this.physics.add.sprite(300, 400, 'player2')
+        this.otherPlayer = this.physics.add.sprite('player2')
         this.player = this.physics.add.sprite(300, 400, 'player')
         
         this.socket = io();
@@ -926,408 +926,57 @@ class Scene1 extends Phaser.Scene {
                     this.physics.add.collider(this.otherPlayer, this.expand, () => {
 
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                   
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandRight, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                    
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidRight, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+              
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandLeft, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                        
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidLeft, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandFarLeft, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                      
                     })
 
                     this.physics.add.collider(this.otherPlayer, this.expandFarRight, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                  
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandBottom, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                        
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandMidBottom, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+               
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandBottomFar, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+ 
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandTop, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+            
                     })
                     this.physics.add.collider(this.otherPlayer, this.expandTopMid, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.player.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                    
                     })
 
                     this.physics.add.collider(this.otherPlayer, this.expandTopFar, () => {
                         this.otherPlayer.destroy()
-                        this.time.delayedCall(3000, () => {
-                            this.otherPlayer = this.physics.add.sprite(20, 20, 'player2')
-                            this.otherPlayers.add(this.otherPlayer)
-                            this.physics.add.collider(this.otherPlayer, this.rocks)
-                            this.otherPlayer.setCollideWorldBounds(true)
-                            this.physics.add.collider(this.powerup, this.otherPlayer, () => {
-                                this.powerUpActive = true
-                                this.powerup.visible = false
-                                this.powerup.active = false
-                                this.socket.emit(
-                                    'powerup', {
-                                        x: this.player.x,
-                                        y: this.player.y
-                                    }
-                                )
-                                this.time.delayedCall(6000, () => {
-                                    this.powerUpActive = false
-                                    this.powerup.active = true
-                                    this.powerup.visible = true
-                                    this.powerup.x = 400
-                                    this.powerup.y = 400
-                                    this.powerup.setVelocityX(0)
-                                    this.powerup.setVelocityY(0)
-                                    this.powerup.immovable = true
-
-                                })
-                            })
-                        })
+                
                     })
 
                     this.physics.add.collider(this.player, this.expand, () => {
